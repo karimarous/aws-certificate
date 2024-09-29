@@ -1,0 +1,49 @@
+name: 'Provision certificates'
+
+on:
+  workflow_dispatch:
+    inputs:
+      wildcard:
+        description: Create a wildcard certificate?
+        type: boolean
+  pull_request:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    name: 'Provision certificates'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME  }}
+        aws-region: us-east-1
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.9.6
+
+    - name: Terraform Init
+      run: terraform init -backend-config="bucket=${{ secrets.STATE_BUCKET }}" -backend-config="dynamodb_table=${{ secrets.LOCK_DYNAMODB }}" -backend=true 
+
+    - name: Terraform Format
+      run: terraform fmt -recursive
+
+    - name: Terraform Plan
+      run: terraform plan -var "domain_name=${{ secrets.DOMAIN_NAME }}" -var "wildcard=${{ github.event.inputs.wildcard }}"
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+      run: terraform apply -var "domain_name=${{ secrets.DOMAIN_NAME }}" -var "wildcard=${{ github.event.inputs.wildcard }}" -auto-approve -input=false
