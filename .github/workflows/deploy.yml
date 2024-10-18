@@ -6,6 +6,9 @@ on:
       wildcard:
         description: Create a wildcard certificate?
         type: boolean
+      private:
+        description: Create a private certificate?
+        type: boolean
   pull_request:
 
 permissions:
@@ -14,7 +17,7 @@ permissions:
 
 jobs:
   terraform:
-    name: 'Provision certificates'
+    name: 'Provision Certificates'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -42,8 +45,8 @@ jobs:
       run: terraform fmt -recursive
 
     - name: Terraform Plan
-      run: terraform plan -var "domain_name=${{ secrets.DOMAIN_NAME }}" -var "wildcard=${{ github.event.inputs.wildcard }}"
+      run: terraform plan -var "domain_name=${{ secrets.DOMAIN_NAME }}" -var "wildcard=${{ github.event.inputs.wildcard }}" -var "private=${{ github.event.inputs.private }}"
 
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
-      run: terraform apply -var "domain_name=${{ secrets.DOMAIN_NAME }}" -var "wildcard=${{ github.event.inputs.wildcard }}" -auto-approve -input=false
+      run: terraform apply -var "domain_name=${{ secrets.DOMAIN_NAME }}" -var "wildcard=${{ github.event.inputs.wildcard }}" -var "private=${{ github.event.inputs.private }}" -auto-approve -input=false

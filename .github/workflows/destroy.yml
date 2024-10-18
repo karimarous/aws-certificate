@@ -6,7 +6,9 @@ on:
       wildcard:
         description: Delete a wildcard certificate?
         type: boolean      
-
+      private:
+        description: Create a private certificate?
+        type: boolean
 permissions:
   id-token: write
   contents: read

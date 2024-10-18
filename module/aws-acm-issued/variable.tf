@@ -2,7 +2,7 @@ variable "domain_name" {
   type = string
 }
 
-variable "private_zone" {
+variable "private" {
   type = bool
 }
 
