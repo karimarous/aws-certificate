@@ -60,6 +60,6 @@ In this section, we're going to destroy the AWS certificate
 4. Click run
 ```
 
-<!-- # 5 Use the certificate in a real life project
+# 5 Use the certificate in a real life project
 I covered this section in another repo
-[aws-terraform-frontend](https://github.com/opsforall/aws-terraform-frontend) -->
+[aws-terraform-frontend](https://github.com/opsforall/aws-terraform-frontend)
