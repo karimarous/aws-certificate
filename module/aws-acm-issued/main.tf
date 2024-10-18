@@ -1,6 +1,6 @@
 data "aws_route53_zone" "example_route53_zone" {
   name         = var.domain_name
-  private_zone = var.private_zone
+  private_zone = var.private
 }
 
 resource "aws_acm_certificate" "example_acm_frontend_certificate" {
@@ -19,8 +19,6 @@ resource "aws_route53_record" "example_route53_frontend_records_verification" {
       record = domain_verification_option.resource_record_value
       type   = domain_verification_option.resource_record_type
     }
-  #  # Skips the domain if it doesn't contain a wildcard
-  #   if length(regexall("\\*\\..+", domain_verification_option.domain_name)) > 0
   }
   allow_overwrite = true
   name            = each.value.name
@@ -36,4 +34,3 @@ resource "aws_acm_certificate_validation" "talentia_frontend_certificate_validat
   validation_record_fqdns = [for record in aws_route53_record.example_route53_frontend_records_verification : record.fqdn]
   depends_on = [ aws_acm_certificate.example_acm_frontend_certificate, aws_route53_record.example_route53_frontend_records_verification ]
 }
-
